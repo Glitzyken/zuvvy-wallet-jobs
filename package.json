@@ -1,0 +1,39 @@
+{
+  "name": "zuvy-wallet-jobs",
+  "version": "1.0.0",
+  "description": "A NodeJS, Typescript private scheduled job runner that runs in the background every 5 minutes.",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . --fix",
+    "build": "rm -rf dist/ && tsc --project .",
+    "start": "node dist/index.js",
+    "postinstall": "npm run build",
+    "dev": "nodemon .",
+    "prepare": "husky install",
+    "format": "prettier --write \"**/*.ts\""
+  },
+  "author": "Kenneth Jimmy",
+  "license": "ISC",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^17.0.42",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "husky": "^8.0.1",
+    "nodemon": "^2.0.12",
+    "prettier": "^2.6.2",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.182",
+    "@types/node-schedule": "^2.1.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "lodash": "^4.17.21",
+    "node-schedule": "^2.1.0"
+  }
+}
