@@ -5,8 +5,8 @@ import axios from 'axios';
 
 dotenv.config();
 
-// Check the database for all transactions greater than #1,500 and carried out only between the hours of 7:00 AM and 3:00 PM and add the transaction details for transactions that meet the above criteria to a separate table on the database
-schedule.scheduleJob('00 12 * * *', async () => {
+schedule.scheduleJob('*/5 * * * *', async () => {
+  // Check the database for all transactions greater than #1,500 and carried out only between the hours of 7:00 AM and 3:00 PM and add the transaction details for transactions that meet the above criteria to a separate table on the database
   let res;
 
   try {
@@ -78,41 +78,40 @@ schedule.scheduleJob('00 12 * * *', async () => {
   if (createdPostTransactions.status === 200) {
     console.log('Post-Transaction records created successfully! 🥳');
   }
-});
 
-// If the job runs between the hours of 12 noon to 2:45 PM, it should set a flag peak_hours on the above table to true
-schedule.scheduleJob('45 14 * * *', async () => {
-  const url = `${process.env.BASE_URL}transactions/post-transactions/peak-hours`;
+  // If the job runs between the hours of 12 noon to 2:45 PM, it should set a flag peak_hours on the above table to true
+  const now = Date.now();
+  const twelveNoon = new Date().setUTCHours(11, 59, 59, 999);
+  const twoFourtyFivePm = new Date().setUTCHours(14, 44, 59, 999);
 
-  let success;
+  if (now >= twelveNoon && now <= twoFourtyFivePm) {
+    const url = `${process.env.BASE_URL}transactions/post-transactions/peak-hours`;
 
-  if (url) {
-    try {
-      success = await axios.patch(
-        url,
-        {},
-        {
-          headers: {
-            'x-api-key': process.env.API_KEY as string,
+    let success;
+
+    if (url) {
+      try {
+        success = await axios.patch(
+          url,
+          {},
+          {
+            headers: {
+              'x-api-key': process.env.API_KEY as string,
+            },
           },
-        },
-      );
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-      }
+        );
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error(error.response?.data);
+        }
 
-      return;
+        return;
+      }
+    }
+
+    if (success) {
+      console.log(success.data.message);
+      console.log('peak_hours successful!!! 🥳');
     }
   }
-
-  if (success) {
-    console.log(success.data.message);
-    console.log('peak_hours successful!!! 🥳');
-  }
-});
-
-// gracefully shutdown jobs when a system interrupt occurs
-process.on('SIGINT', function () {
-  schedule.gracefulShutdown().then(() => process.exit(0));
 });
